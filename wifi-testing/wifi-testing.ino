@@ -38,6 +38,7 @@ void loop() {
     // Receive data
     receiveJsonData(doc, Serial2);
     if (doc.isNull()) {
+      Serial.println("No data received");
       break;
     }
 
