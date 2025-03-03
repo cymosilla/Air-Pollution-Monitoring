@@ -21,6 +21,7 @@ DynamicJsonDocument doc(512);
 void setup() {
   Serial.begin(115200);
   Serial2.begin(9600, SERIAL_8N1, RX, TX);
+  pinMode(LED, OUTPUT);
 
   connectWiFi(WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNELS);
   Serial.println("Setup done");
