@@ -119,9 +119,9 @@ bool verifyJsonContent(DynamicJsonDocument& doc) {
 // Sets LED to on or off
 void setLED(bool led_status) {
   if (led_status) {
-    digitalWrite(LED, LOW);
+    digitalWrite(LED, HIGH);
   }
   else {
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED, LOW);
   }
 }
