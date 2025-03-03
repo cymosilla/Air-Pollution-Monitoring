@@ -1,9 +1,6 @@
 #include <SoftwareSerial.h>
 #include <ArduinoJson.h>
 
-#define CHUNK_SIZE 32
-#define BUFFER_TIMEOUT 10000
-
 DynamicJsonDocument doc(2048);
 
 #define READING_PERIOD 10000 // This sets the time period of reading data from the sensors. 10000 means 10 seconds
@@ -67,8 +64,8 @@ void setup() {
 
   SCD4X.setTempComp(4.0);
 
-  float temp = 0;
-  temp = SCD4X.getTempComp();
+  // float temp = 0;
+  // temp = SCD4X.getTempComp();
   // Serial.print("The current temperature compensation value : ");
   // Serial.print(temp);
   // Serial.println(" C");
@@ -138,7 +135,8 @@ void setup() {
   * @return None
   * @note The measurement mode must be disabled when changing the sensor settings; after giving the stop_periodic_measurement command, the sensor needs to wait 500ms before responding to other commands.
   */
-  SCD4X.enablePeriodMeasure(SCD4X_START_PERIODIC_MEASURE);
+  // Why is this line here when SCD4X.enablePeriodMeasure(SCD4X_STOP_PERIODIC_MEASURE); was already called ??
+  SCD4X.enablePeriodMeasure(SCD4X_START_PERIODIC_MEASURE); 
 
   // Serial.println();
   // CO2 END ********************************************************************

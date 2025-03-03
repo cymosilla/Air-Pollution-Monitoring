@@ -1,22 +1,20 @@
 #include <WiFi.h>
+#include <HTTPClient.h>
 #include <ArduinoJson.h>
 
+#define LED 2
 #define RX 26
 #define TX 25
 
-#define BUFFER_TIMEOUT 1000
+#define BUFFER_THRESHOLD 200 // Minimum characters on buffer required to trigger JSON reception
+
 #define HTTP_TIMEOUT 8000 // Must be less than the READING_PERIOD in combo.ino
 
-#define WIFI_SSID ""
+#define WIFI_SSID "UCInet Mobile Access"
 #define WIFI_PASSWORD ""
 #define WIFI_CHANNELS 6
 
-#define URL_ENDPOINT "https://v2.jokeapi.dev/joke/Programming"
-
-enum class Status {
-  idle,
-  uploading
-};
+#define URL_ENDPOINT "https://httpbin.org/post" // Test url for reflecting the POST data
 
 DynamicJsonDocument doc(512);
 
@@ -29,14 +27,27 @@ void setup() {
 }
  
 void loop() {
-  waitForBuffer(Serial2, BUFFER_TIMEOUT);
-  receiveJsonData(doc, Serial2);
-  if (doc.isNull()) {
-    Serial.println("No data received");
+  // Checks if the buffer thas more than BUFFER_THRESHOLD
+  while (Serial2.available() > BUFFER_THRESHOLD) {
+    // Receive data
+    receiveJsonData(doc, Serial2);
+    if (doc.isNull()) {
+      break;
+    }
+
+    // Debug statement
+    // serializeJsonPretty(doc, Serial);
+    
+    // Send data if the content is valid
+    if (verifyJsonContent(doc)) {
+      sendDataToURL(URL_ENDPOINT, doc);
+    }
+    else {
+      Serial.println("Data received but is invalid");
+    }
+      
   }
-  else {
-    serializeJsonPretty(doc, Serial);
-  }
+  delay(100);
 }
 
 // Connects to WiFi
@@ -53,7 +64,7 @@ void connectWiFi(const String& ssid, const String& password, const int& channels
 
 }
 
-// Receives json data in chunks
+// Receives json data from input. Stores into doc.
 void receiveJsonData(DynamicJsonDocument& doc, Stream& input) {
   // Clears the document. If data reception fails, it will remain empty. 
   // Use its emptiness to determine if the process was successful
@@ -61,7 +72,7 @@ void receiveJsonData(DynamicJsonDocument& doc, Stream& input) {
   String data = input.readStringUntil('\n');
   DeserializationError error = deserializeJson(doc, data);
 
-  // Test if parsing succeeds.
+  // Clears doc if the data parsing fails
   if (error) {
     Serial.print(F("deserializeJson failed: "));
     Serial.println(error.f_str());
@@ -70,16 +81,47 @@ void receiveJsonData(DynamicJsonDocument& doc, Stream& input) {
   }
 }
 
-// Waits for input. Returns true if there is data on the input stream buffer before timeout is reached
-bool waitForBuffer(Stream& stream, const int& timeout) {
-  int start_time = millis();
-  int current_time = millis();
+// Sends data to http endpoint
+void sendDataToURL(const String& url, DynamicJsonDocument& doc) {
+  // Turns on LED to indicate uploading status
+  setLED(true);
 
-  while (stream.available() == 0 && current_time - start_time < timeout) {
-    delay(100);
-    current_time = millis();
+  String data;
+  serializeJson(doc, data);
+
+  HTTPClient http;
+  http.setTimeout(HTTP_TIMEOUT);
+  http.begin(url);
+
+  http.addHeader("Content-Type", "application/json");
+  int response_code = http.POST(data);
+  if (response_code == 200) {
+    Serial.println(http.getString());
   }
-  return stream.available() > 0;
+  else {
+    Serial.print("Post failed: code ");
+    Serial.println(response_code);
+  }
+
+  http.end();
+
+  // Turns off LED
+  setLED(false);
+
 }
 
+// Checks if the json document is valid before sending
+// Defaults to true for now
+bool verifyJsonContent(DynamicJsonDocument& doc) {
+  return true;
+}
 
+// Sets LED to on or off
+void setLED(bool led_status) {
+  if (led_status) {
+    digitalWrite(LED, LOW);
+  }
+  else {
+    digitalWrite(LED, HIGH);
+  }
+}
