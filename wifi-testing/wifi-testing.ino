@@ -51,18 +51,21 @@ void loop() {
       
   }
   Serial.println("No data received");
+  if (WiFi.status() != WL_CONNECTED) {
+    connectWiFi(WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNELS);
+  }
   delay(1000);
 }
 
 // Connects to WiFi
 void connectWiFi(const String& ssid, const String& password, const int& channels) {
   // Set WiFi to station mode and disconnect from an AP if it was previously connected
+  WiFi.disconnect();
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password, channels);
-  Serial.println("Connecting to WiFi");
+  Serial.println("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED) {
     delay(100);
-    Serial.print(".");
   }
   Serial.println("\nConnected");
 
