@@ -34,16 +34,12 @@ void setup() {
  
 void loop() {
   // Checks if the buffer thas more than BUFFER_THRESHOLD
-  while (Serial2.available() > BUFFER_THRESHOLD) {
+  while (Serial2.available() >= BUFFER_THRESHOLD) {
     // Receive data
     receiveJsonData(doc, Serial2);
     if (doc.isNull()) {
-      Serial.println("No data received");
       break;
     }
-
-    // Debug statement
-    // serializeJsonPretty(doc, Serial);
     
     // Send data if the content is valid
     if (verifyJsonContent(doc)) {
@@ -54,8 +50,8 @@ void loop() {
     }
       
   }
-
-  delay(100);
+  Serial.println("No data received");
+  delay(1000);
 }
 
 // Connects to WiFi
