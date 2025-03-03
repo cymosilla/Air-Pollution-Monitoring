@@ -19,10 +19,15 @@
 DynamicJsonDocument doc(512);
 
 void setup() {
+  // Serials
   Serial.begin(115200);
   Serial2.begin(9600, SERIAL_8N1, RX, TX);
-  pinMode(LED, OUTPUT);
 
+  // Built-in LED
+  pinMode(LED, OUTPUT);
+  setLED(false);
+
+  // WiFi
   connectWiFi(WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNELS);
   Serial.println("Setup done");
 }
@@ -48,6 +53,7 @@ void loop() {
     }
       
   }
+
   delay(100);
 }
 
