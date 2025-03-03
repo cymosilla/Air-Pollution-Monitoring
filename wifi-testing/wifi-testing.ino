@@ -2,7 +2,6 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-#define LED 2
 #define RX 26
 #define TX 25
 
@@ -24,7 +23,7 @@ void setup() {
   Serial2.begin(9600, SERIAL_8N1, RX, TX);
 
   // Built-in LED
-  pinMode(LED, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
   setLED(false);
 
   // WiFi
@@ -126,9 +125,9 @@ bool verifyJsonContent(DynamicJsonDocument& doc) {
 // Sets LED to on or off
 void setLED(bool led_status) {
   if (led_status) {
-    digitalWrite(LED, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
   }
   else {
-    digitalWrite(LED, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
   }
 }
