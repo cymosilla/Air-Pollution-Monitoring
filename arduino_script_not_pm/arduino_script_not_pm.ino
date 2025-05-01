@@ -8,7 +8,7 @@ const String UNPROCESSED_FILE_PATH = "un.csv";
 const String PROCESSED_FILE_PATH = "proces.csv";
 File csvFile;
 
-DynamicJsonDocument doc(512);
+JsonDocument doc;
 const int fieldCount = 4;
 const String jsonFields[fieldCount] = {
   "ozone",
@@ -84,9 +84,9 @@ void loop() {
     if (current_time - timer > READING_PERIOD) {
       
       // Get readings
-      readOzoneData(doc);
-      // readPMSdata(doc);
-      readCO2data(doc);
+      readOzoneData();
+      // readPMSdata();
+      readCO2data();
 
       // Sends data to esp32
       serializeJson(doc, Serial);
@@ -104,12 +104,12 @@ void loop() {
     }
 }
 
-void readOzoneData(DynamicJsonDocument& doc) {
+void readOzoneData() {
   int reading = analogRead(ozonePin); //read from ozone pin
   doc["ozone"] = reading;
 }
 
-void readCO2data(DynamicJsonDocument& doc) {
+void readCO2data() {
   if(SCD4X.getDataReadyStatus()) {
     DFRobot_SCD4X::sSensorMeasurement_t data;
     SCD4X.readMeasurement(&data);
@@ -121,7 +121,7 @@ void readCO2data(DynamicJsonDocument& doc) {
 }
 
 // TODO: complete this function 
-void readPMSdata(DynamicJsonDocument& doc) {
+void readPMSdata() {
 
 
 }
