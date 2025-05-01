@@ -180,8 +180,8 @@ void saveToCSV(const String& filePath) {
   }
 
   // Debug statement
-  Serial.println("Writing new row to: " + filePath);
-  Serial.println(newRow);
+  // Serial.println("Writing new row to: " + filePath);
+  // Serial.println(newRow);
 
   // Creates a new csv file if it doesn't exist yet
   if (!SD.exists(filePath.c_str())) {
