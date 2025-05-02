@@ -1,16 +1,30 @@
-#include <SoftwareSerial.h>
+// #include <SoftwareSerial.h>
 #include <ArduinoJson.h>
 #include <DFRobot_SCD4X.h>
 #include <SPI.h>
 #include <SD.h>
 
-const String UNPROCESSED_FILE_PATH = "un.csv";
-const String PROCESSED_FILE_PATH = "proces.csv";
+#define READING_PERIOD 10000 // This sets the time period of reading data from the sensors. 10000 means 10 seconds
+#define CHIP_SELECT 4
+#define UNPROCESSED_FILE_PATH "un.csv"
+#define FIELD_COUNT 4
+
+//  Pass 1: 738 Byte free memory
+
+// Pass 2: 740 Bytes (removed SoftwareSerial import)
+
+// Pass 3: 766 Bytes (macros instead of gloabl variables) 
+
+
+
+
+
+// const String PROCESSED_FILE_PATH = "proces.csv";
 File csvFile;
 
 JsonDocument doc;
-const int fieldCount = 4;
-const String jsonFields[fieldCount] = {
+
+const String jsonFields[FIELD_COUNT] = {
   "ozone",
   "co2_ppm",
   "temp_c",
@@ -18,7 +32,7 @@ const String jsonFields[fieldCount] = {
 };
 
 
-#define READING_PERIOD 10000 // This sets the time period of reading data from the sensors. 10000 means 10 seconds
+
 
 // TODO: Need to create macros for the serial ports
 // SoftwareSerial pmsSerial(2, 3);
@@ -29,7 +43,7 @@ DFRobot_SCD4X SCD4X(&Wire, SCD4X_I2C_ADDR);
 // O3 ***********************************************************************************
 const int ozonePin = A3;  //Ozone in pin 3 on board
  
-const int chipSelect = 4;
+
 
 void setup() {
   // Initialize ESP32 as hardware serial
@@ -37,11 +51,11 @@ void setup() {
 
   // Initialize SD
   pinMode(SS, OUTPUT);
-  if (!SD.begin(chipSelect)) {
+  if (!SD.begin(CHIP_SELECT)) {
     Serial.println("SD init failed");
   }
 
-  SD.remove(UNPROCESSED_FILE_PATH.c_str());
+  SD.remove(UNPROCESSED_FILE_PATH);
 
   // PM 2.5
   // sensor baud rate is 9600
@@ -127,9 +141,9 @@ void readPMSdata() {
 }
 
 // Prints all the content of the file as 
-void printFromCSV(const String& filePath) {
+void printFromCSV(const char* filePath) {
   String csvData = "";
-  csvFile = SD.open(filePath.c_str());
+  csvFile = SD.open(filePath);
   if (csvFile) {
     while (csvFile.available()) {
       char newChar = csvFile.read();
@@ -138,22 +152,23 @@ void printFromCSV(const String& filePath) {
     csvFile.close();
   }
   else {
-    Serial.println("Failed to open: " + filePath);
+    Serial.println("Failed to open: ");
+    Serial.println(filePath);
   }  
 }
 
-void createCSV(const String& filePath) {
+void createCSV(const char* filePath) {
   // Create the specified CSV file. Overwrite if it exists
-  if (SD.exists(filePath.c_str())) {
-    SD.remove(filePath.c_str());
+  if (SD.exists(filePath)) {
+    SD.remove(filePath);
   }
 
   String csvHeader = "";
 
   // Create the header row
-  for (int i = 0; i < fieldCount; i++) {
+  for (int i = 0; i < FIELD_COUNT; i++) {
     csvHeader += jsonFields[i];
-    if (i != fieldCount - 1) {
+    if (i != FIELD_COUNT - 1) {
       csvHeader += ",";
     }
   }
@@ -161,10 +176,10 @@ void createCSV(const String& filePath) {
   writeRowToCSV(csvHeader, filePath);
 }
 
-void saveToCSV(const String& filePath) {
+void saveToCSV(const char* filePath) {
   String newRow = "";
 
-  for (int i = 0; i < fieldCount; i++) {
+  for (int i = 0; i < FIELD_COUNT; i++) {
     String currentField = jsonFields[i];
 
     if (doc[currentField].is<JsonVariant>()) {
@@ -174,7 +189,7 @@ void saveToCSV(const String& filePath) {
       newRow += "null";
     }
 
-    if (i != fieldCount - 1) {
+    if (i != FIELD_COUNT - 1) {
       newRow += ",";
     }
   }
@@ -184,7 +199,7 @@ void saveToCSV(const String& filePath) {
   // Serial.println(newRow);
 
   // Creates a new csv file if it doesn't exist yet
-  if (!SD.exists(filePath.c_str())) {
+  if (!SD.exists(filePath)) {
     createCSV(filePath);
   }
 
@@ -192,13 +207,14 @@ void saveToCSV(const String& filePath) {
 }
 
 // Write data as a new row to the specified file
-void writeRowToCSV(const String& data, const String& filePath) {
-  csvFile = SD.open(filePath.c_str(), FILE_WRITE);
+void writeRowToCSV(const String& data, const char* filePath) {
+  csvFile = SD.open(filePath, FILE_WRITE);
   if (csvFile) {
     csvFile.println(data);
   }
   else {
-    Serial.println("Failed to open: " + filePath);
+    Serial.println("Failed to open: ");
+    Serial.println(filePath);
   }
   csvFile.close();
 }
