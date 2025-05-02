@@ -5,8 +5,8 @@
 #include <SD.h>
 
 #define READING_PERIOD 10000 // This sets the time period of reading data from the sensors. 10000 means 10 seconds
-#define CHIP_SELECT 4
-#define UNPROCESSED_FILE_PATH "un.csv"
+#define CHIP_SELECT 5
+#define UNPROCESSED_FILE_PATH "/un.csv"
 #define FIELD_COUNT 4
 
 //  Pass 1: 738 Byte free memory
@@ -30,8 +30,6 @@ const String jsonFields[FIELD_COUNT] = {
   "temp_c",
   "humidity",
 };
-
-
 
 
 // TODO: Need to create macros for the serial ports
@@ -85,8 +83,6 @@ void setup() {
 }
 
 unsigned long timer = millis();
-
-
 
 
 void loop() {
@@ -208,7 +204,7 @@ void saveToCSV(const char* filePath) {
 
 // Write data as a new row to the specified file
 void writeRowToCSV(const String& data, const char* filePath) {
-  csvFile = SD.open(filePath, FILE_WRITE);
+  csvFile = SD.open(filePath, FILE_APPEND);
   if (csvFile) {
     csvFile.println(data);
   }
