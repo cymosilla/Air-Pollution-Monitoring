@@ -1,5 +1,15 @@
 #include "sd_functions.h"
 
+// Initializes SD card
+void initSD() {
+  pinMode(SS, OUTPUT);
+  if (!SD.begin(CHIP_SELECT)) {
+    Serial.println("SD init failed");
+  }
+  
+  // Debug only. Removes saved csv file
+  SD.remove(FILE_PATH);
+}
 
 // Prints all the content of the file as 
 void printFromCSV(const char* filePath) {

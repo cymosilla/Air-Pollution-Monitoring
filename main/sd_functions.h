@@ -4,8 +4,10 @@
 #include <SPI.h>
 #include <SD.h>
 #include <ArduinoJson.h>
+#include <Arduino.h>
 #include "macros.h"
 
+void initSD();
 void writeRowToCSV(const String& data, const char* filePath);
 void printFromCSV(const char* filePath);
 void createCSV(const char* filePath, const String* jsonFields, JsonDocument& doc);
