@@ -1,9 +1,20 @@
-#ifndef PIN_DEFINITION_H
-#define PIN_DEFINITION_H
+#ifndef MACROS_H
+#define MACROS_H
 
+// Sensors
 #define CHIP_SELECT 5
-#define READING_PERIOD 10000 // This sets the time period of reading data from the sensors. 10000 means 10 seconds
+#define READING_PERIOD 10000
+#define OZONE_PIN 39
+
+// SD
 #define FILE_PATH "/file.csv"
 #define FIELD_COUNT 4
+
+// Wifi Module
+#define WIFI_SSID "Wokwi-GUEST"
+#define WIFI_PASSWORD ""
+#define WIFI_CHANNELS 6
+#define URL_ENDPOINT ""
+#define HTTP_TIMEOUT 10000
 
 #endif
