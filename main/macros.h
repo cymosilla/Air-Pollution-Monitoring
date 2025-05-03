@@ -2,8 +2,8 @@
 #define MACROS_H
 
 // Sensors
-#define CHIP_SELECT 5
 #define READING_PERIOD 10000
+#define CHIP_SELECT 5
 #define OZONE_PIN 39
 
 // SD
