@@ -10,6 +10,8 @@ const String jsonFields[FIELD_COUNT] = {
   "co2_ppm",
   "temp_c",
   "humidity",
+  "pm1_mgm3",
+  "pm25_mgm3"
 };
  
 
@@ -17,7 +19,7 @@ SensirionI2cScd4x SCD40;
 
 void setup() {
   Serial.begin(9600);
-  delay(1000)
+  delay(1000);
 
   // Initialize components
   initSD();
@@ -42,7 +44,7 @@ void loop() {
       
       // Get readings
       readOzoneData(doc);
-      // readPMSdata();
+      readPMdata(doc);
       readSCD40Data(SCD40, doc);
 
       // Prints data

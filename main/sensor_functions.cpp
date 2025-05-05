@@ -66,6 +66,7 @@ void readSCD40Data(SensirionI2cScd4x& sensor, JsonDocument& doc) {
     Serial.println(errorMessage);
     return;
   }
+  
   doc["co2_ppm"] = co2Concentration;
   doc["temp_c"] = temperature;
   doc["humidity"] = relativeHumidity;
@@ -78,8 +79,26 @@ void readOzoneData(JsonDocument& doc) {
 }
 
 
-// TODO: complete this function 
-void readPMSdata() {
+// Reads PM2.5 and PM1.0 ppm 
+void readPMdata(JsonDocument& doc) {
+  doc["pm1_mgm3"] = readPMForPin(PM1_PIN);
+  doc["pm25_mgm3"] = readPMForPin(PM25_PIN);
+}
 
+// Reads the PM data on the give pin
+float readPMForPin(const int pinNumber) {
+  unsigned long startTime = millis();
+  float lowPulse = 0;
 
+  // Accumulate LOW pulses for the sample time
+  while ((millis() - startTime) < PM_SAMPLE_TIME) {
+    lowPulse += pulseIn(pinNumber, LOW) / 1000.0;  // Convert µs to ms
+  }
+
+  // Calculate low ratio (%)
+  float lowRatio = (lowPulse / PM_SAMPLE_TIME) * 100.0;
+
+  // Calculate concentration in mg/m³ using empirical formula
+  float concentration = 0.00258425 * pow(lowRatio, 2) + 0.0858521 * lowRatio - 0.01345549;
+  return max(0.0f, concentration);
 }
