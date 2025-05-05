@@ -7,10 +7,10 @@ void initDFRobot(DFRobot_SCD4X& SCD4X) {
     Serial.println("Communication with SCD4X failed, please check connection");
     delay(3000);
   }
-
-  // SCD4X.enablePeriodMeasure(SCD4X_STOP_PERIODIC_MEASURE);
+  // Stop periodic measure to configure sensor
+  SCD4X.enablePeriodMeasure(SCD4X_STOP_PERIODIC_MEASURE);
   SCD4X.setTempComp(4.0);
-  SCD4X.setSensorAltitude(540);
+  SCD4X.setSensorAltitude(17);
   SCD4X.enablePeriodMeasure(SCD4X_START_PERIODIC_MEASURE); 
 }
 
