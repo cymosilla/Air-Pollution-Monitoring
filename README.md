@@ -4,4 +4,4 @@
 Sharp Optical Dust Sensor: https://wiki.dfrobot.com/Sharp_GP2Y1010AU
 
 # Wiring Diagram 
-![image](https://github.com/user-attachments/assets/783fa389-e870-4f97-ad14-de67b4b25589)
+![image](https://github.com/user-attachments/assets/71ad3001-b01e-4d22-9f91-d7f8f5c4b7ef)
