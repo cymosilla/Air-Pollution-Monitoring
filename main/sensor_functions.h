@@ -3,11 +3,17 @@
 
 #include <ArduinoJson.h>
 #include <Arduino.h>
-#include <DFRobot_SCD4X.h>
+#include <SensirionI2cScd4x.h>
+#include <Wire.h>
 #include "macros.h"
 
-void initDFRobot(DFRobot_SCD4X& SCD4X);
-void readSCD4XData(DFRobot_SCD4X& SCD4X, JsonDocument& doc);
+#ifdef NO_ERROR
+#undef NO_ERROR
+#endif
+#define NO_ERROR 0
+
+void initSCD40(SensirionI2cScd4x& sensor);
+void readSCD40Data(SensirionI2cScd4x& sensor, JsonDocument& doc);
 void readOzoneData(JsonDocument& doc);
 void readPMSdata();
 

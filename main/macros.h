@@ -5,6 +5,7 @@
 #define READING_PERIOD 10000
 #define CHIP_SELECT 5
 #define OZONE_PIN 25
+#define IRVINE_ALTITUDE 17 // Altitude of Irvine in meters
 
 // SD
 #define FILE_PATH "/file.csv"

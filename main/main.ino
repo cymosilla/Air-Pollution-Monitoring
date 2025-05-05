@@ -13,15 +13,15 @@ const String jsonFields[FIELD_COUNT] = {
 };
  
 
-DFRobot_SCD4X SCD4X(&Wire, SCD4X_I2C_ADDR);
+SensirionI2cScd4x SCD40;
 
 void setup() {
-  // Initialize ESP32 as hardware serial
   Serial.begin(9600);
+  delay(1000)
 
   // Initialize components
   initSD();
-  initDFRobot(SCD4X);
+  initSCD40(SCD40);
   // TODO: init wifi
 
   Serial.println("Init complete");
@@ -43,7 +43,7 @@ void loop() {
       // Get readings
       readOzoneData(doc);
       // readPMSdata();
-      readSCD4XData(SCD4X, doc);
+      readSCD40Data(SCD40, doc);
 
       // Prints data
       serializeJson(doc, Serial);
