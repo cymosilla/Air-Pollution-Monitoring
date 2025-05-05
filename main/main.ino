@@ -27,17 +27,16 @@ void setup() {
   // TODO: init wifi
 
   Serial.println("Init complete");
-
-
 }
 
 unsigned long timer = millis();
+unsigned long current_time = millis();
 
 
 void loop() {
 
     // Gets current time
-    unsigned long current_time = millis();
+    current_time = millis();
 
     // Gets readings if the time difference is greater than READING_PERIOD
     if (current_time - timer > READING_PERIOD) {

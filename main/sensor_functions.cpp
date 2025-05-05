@@ -3,6 +3,7 @@
 static char errorMessage[64];
 static int16_t error;
 
+// Prints SCD40 error to main serial
 void showError() {
   if (error != NO_ERROR) {
     errorToString(error, errorMessage, sizeof errorMessage);
@@ -41,6 +42,8 @@ void readSCD40Data(SensirionI2cScd4x& sensor, JsonDocument& doc) {
   error = sensor.getDataReadyStatus(dataReady);
   showError();
 
+  if (!dataReady) return;
+
   // If ambient pressure compenstation during measurement
   // is required, you should call the respective functions here.
   // Check out the header file for the function definition.
@@ -60,24 +63,26 @@ void readOzoneData(JsonDocument& doc) {
 
 // Reads PM2.5 and PM1.0 ppm 
 void readPMdata(JsonDocument& doc) {
-  doc["pm1_mgm3"] = readPMForPin(PM1_PIN);
-  doc["pm25_mgm3"] = readPMForPin(PM25_PIN);
-}
-
-// Reads the PM data on the give pin
-float readPMForPin(const int pinNumber) {
-  unsigned long startTime = millis();
-  float lowPulse = 0;
+  unsigned long pmMeasureStartTime = millis();
+  float pm1LowPulseOccupancy = 0;
+  float pm25LowPulseOccupancy = 0;
 
   // Accumulate LOW pulses for the sample time
-  while ((millis() - startTime) < PM_SAMPLE_TIME) {
-    lowPulse += pulseIn(pinNumber, LOW) / 1000.0;  // Convert µs to ms
+  while ((millis() - pmMeasureStartTime) < PM_SAMPLE_TIME) {
+    pm1LowPulseOccupancy += pulseIn(PM1_PIN, LOW) / 1000.0;  // Convert µs to ms
+    pm25LowPulseOccupancy += pulseIn(PM25_PIN, LOW) / 1000.0;  // Convert µs to ms
   }
 
   // Calculate low ratio (%)
-  float lowRatio = (lowPulse / PM_SAMPLE_TIME) * 100.0;
+  float pm1LowRatio = (pm1LowPulseOccupancy / PM_SAMPLE_TIME) * 100.0;
+  float pm25LowRatio = (pm25LowPulseOccupancy / PM_SAMPLE_TIME) * 100.0;
+
 
   // Calculate concentration in mg/m³ using empirical formula
-  float concentration = 0.00258425 * pow(lowRatio, 2) + 0.0858521 * lowRatio - 0.01345549;
-  return max(0.0f, concentration);
+  float pm1Concentration = 0.00258425 * pow(pm1LowRatio, 2) + 0.0858521 * pm1LowRatio - 0.01345549;
+  float pm25Concentration = 0.00258425 * pow(pm25LowRatio, 2) + 0.0858521 * pm25LowRatio - 0.01345549;
+
+  doc["pm1_mgm3"] = pm1Concentration;
+  doc["pm25_mgm3"] = pm25Concentration;
 }
+
