@@ -17,6 +17,7 @@ void readSCD40Data(SensirionI2cScd4x& sensor, JsonDocument& doc);
 void readOzoneData(JsonDocument& doc);
 void readPMdata(JsonDocument& doc);
 float readPMForPin(const int pinNumber);
+void showError();
 
 
 #endif

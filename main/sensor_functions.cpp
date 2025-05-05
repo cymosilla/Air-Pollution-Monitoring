@@ -3,41 +3,31 @@
 static char errorMessage[64];
 static int16_t error;
 
+void showError() {
+  if (error != NO_ERROR) {
+    errorToString(error, errorMessage, sizeof errorMessage);
+    Serial.println(errorMessage);
+  }
+}
+
 // Initializes the DFRobot_SCD4X sensor
 void initSCD40(SensirionI2cScd4x& sensor) {
   
   // Ensure sensor is in clean state
   error = sensor.wakeUp();
-  if (error != NO_ERROR) {
-      Serial.print("Error trying to execute wakeUp(): ");
-      errorToString(error, errorMessage, sizeof errorMessage);
-      Serial.println(errorMessage);
-  }
+  showError();
+
   error = sensor.stopPeriodicMeasurement();
-  if (error != NO_ERROR) {
-      Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
-      errorToString(error, errorMessage, sizeof errorMessage);
-      Serial.println(errorMessage);
-  }
+  showError();
+
   error = sensor.setSensorAltitude(IRVINE_ALTITUDE);
-  if (error != NO_ERROR) {
-      Serial.print("Error trying to execute setSensorAltitude(): ");
-      errorToString(error, errorMessage, sizeof errorMessage);
-      Serial.println(errorMessage);
-  }
+  showError();
 
   error = sensor.reinit();
-  if (error != NO_ERROR) {
-      Serial.print("Error trying to execute reinit(): ");
-      errorToString(error, errorMessage, sizeof errorMessage);
-      Serial.println(errorMessage);
-  }
+  showError();
+
   error = sensor.startPeriodicMeasurement();
-  if (error != NO_ERROR) {
-      Serial.print("Error trying to execute startPeriodicMeasurement(): ");
-      errorToString(error, errorMessage, sizeof errorMessage);
-      Serial.println(errorMessage);
-  }
+  showError();
 
 }
 
@@ -49,23 +39,13 @@ void readSCD40Data(SensirionI2cScd4x& sensor, JsonDocument& doc) {
   float relativeHumidity = 0.0;
 
   error = sensor.getDataReadyStatus(dataReady);
-  if (error != NO_ERROR) {
-    Serial.print("Error trying to execute getDataReadyStatus(): ");
-    errorToString(error, errorMessage, sizeof errorMessage);
-    Serial.println(errorMessage);
-    return;
-  }
-  //
+  showError();
+
   // If ambient pressure compenstation during measurement
   // is required, you should call the respective functions here.
   // Check out the header file for the function definition.
   error = sensor.readMeasurement(co2Concentration, temperature, relativeHumidity);
-  if (error != NO_ERROR) {
-    Serial.print("Error trying to execute readMeasurement(): ");
-    errorToString(error, errorMessage, sizeof errorMessage);
-    Serial.println(errorMessage);
-    return;
-  }
+  showError();
   
   doc["co2_ppm"] = co2Concentration;
   doc["temp_c"] = temperature;
@@ -74,8 +54,7 @@ void readSCD40Data(SensirionI2cScd4x& sensor, JsonDocument& doc) {
 
 // Reads ozone data
 void readOzoneData(JsonDocument& doc) {
-  int reading = analogRead(OZONE_PIN); //read from ozone pin
-  doc["ozone"] = reading;
+  doc["ozone"] = analogRead(OZONE_PIN); //read from ozone pin
 }
 
 
