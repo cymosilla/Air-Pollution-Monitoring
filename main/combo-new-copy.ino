@@ -7,6 +7,10 @@ DynamicJsonDocument doc(2048);
 const unsigned long sampleTime = 5000;
 #define READING_PERIOD 5000 // This sets the time period of reading data from the sensors. 10000 means 10 seconds
 
+const String& ssid = "UCInet Mobile Access";
+const String& password = "";
+const int& channels = 6;
+
 // TODO: Need to create macros for the serial ports
 //SoftwareSerial pmsSerial(7, 8);
 const int pinPM25 = 7;
@@ -155,7 +159,7 @@ void setup() {
   // Serial.println();
   // CO2 END ********************************************************************
 
-
+  connectWiFi(ssid, password, channels);
 }
 
 int timer = millis();
@@ -180,6 +184,8 @@ void loop() {
 
       // Sends data to esp32
       serializeJson(doc, Serial);
+      //This is the part where we'd need to set up the host
+      //sendDataToURL(url, doc);
       doc.clear();
 
       // Send data to SD 
